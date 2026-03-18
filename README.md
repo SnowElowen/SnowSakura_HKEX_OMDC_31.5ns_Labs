@@ -42,10 +42,7 @@ Initial logic mapping and physical isolation.
 
 *![Weixin Image_20260318204100_6_26](https://github.com/user-attachments/assets/22b17bb2-21c9-4b91-9fdb-dabb24aca638)*
 
-
-
-
-
+*![Weixin Image_20260318204101_7_26](https://github.com/user-attachments/assets/52906542-3e55-47e9-aceb-8c766849af79)*
 
 As the parsing logic scales, the timing window shrinks to its absolute physical limit.
 * **Timing Met**: **WNS** squeezed to **0.472 ns**, **WHS** at **0.030 ns**. 
