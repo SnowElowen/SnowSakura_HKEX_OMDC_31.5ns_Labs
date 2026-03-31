@@ -83,3 +83,24 @@ As the parsing logic scales, the timing window shrinks to its absolute physical 
 * **Worst Hold Slack (WHS)**: **0.030 ns** (Hold)
 
 > **Proprietary Disclaimer:** > **Do not ask for the XDC constraint scripts.** The exact `set_property LOC/BEL` coordinate mappings and Phase Interpolator calibration values are proprietary and isolated. What you see here is the physical result; the manual routing logic behind it remains classified.
+### Stage NEW: VU9P Matrix Scaling & SLR Isolation
+<img width="1098" height="663" alt="Snipaste_2026-03-31_17-51-22" src="https://github.com/user-attachments/assets/a81dbae1-569f-4ed4-b6bd-79310b9fde7d" />
+
+Scaling the core engine to the **Virtex UltraScale+ VU9P** architecture. In this 16nm multi-die matrix, the physical dimension of the silicon becomes the primary latency bottleneck.
+
+* **Timing Met**: **WNS (Worst Negative Slack)** secured at **2.011 ns**. **WHS (Worst Hold Slack)** locked at **0.159 ns**.
+* **Logic Analysis**: The baseline **Five-FF Stage** demonstrates deterministic stability at **322.56 MHz**. However, the **Net Delay** (0.760 ns) now significantly outweighs the **Logic Delay** (0.217 ns). This proves that interconnect routing, rather than gate switching, is the dominant factor in the **36ns** path.
+* **Physical Layer Isolation**: We implemented strict **Pblock** constraints to anchor the parsing logic within the same **SLR** (Super Logic Region) as the **GTY Quad**. By pinning cells to specific **Clock Regions (X5Y10:X6Y14)**, we have physically bypassed the **SLL (Super Long Line)** cross-SLR penalty, which typically incurs a 1.5 ns - 2.2 ns overhead.
+
+### Stage 2: High-Fanout Congestion Management & Routing Matrix Pressure
+
+<img width="1113" height="671" alt="Snipaste_2026-03-31_17-51-06" src="https://github.com/user-attachments/assets/303069d1-602b-4293-a970-e33be2921f5e" />
+
+
+As the **OMD-C** parsing tree expands, **High Fanout** nodes (Fanout > 12) begin to strain the **Routing Matrix**. On a high-density device like the **VU9P**, even moderate fanout forces the router to bridge multiple **CLEM** tiles, leading to unpredictable timing skew.
+
+* **Metric**: **0 Failing Endpoints** across initial baseline paths.
+* **Fanout Governance**: 
+    * Any control signal (e.g., `packet_valid`, `sof_detect`) with a fanout exceeding 12 is flagged for manual **Register Replication**. 
+    * We prohibit the EDA tool from "lazy-routing" critical enable signals across the die. Instead, we force physical replicas of the **FF** to reside immediately adjacent to their target **LUT** clusters using `(* MAX_FANOUT = 12 *)` attributes.
+* **Strategic Buffer**: Maintaining a **2.011 ns** slack is not just for timing closure; it is a critical buffer for the upcoming **Order Book** parallel search logic. In the **VU9P** environment, **Fanout** is not a mere routing statistic—it is a direct threat to the **Zero Jitter** mandate.
