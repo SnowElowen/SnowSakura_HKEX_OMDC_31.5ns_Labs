@@ -23,7 +23,7 @@ Relying on Vivado's Auto-Router for OMD-C parsing is a death sentence. To squeez
 
 ### Stage 1: Datapath Routing & Net Delay Suppression
 
-*![Weixin Image_20260318204056_4_26](https://github.com/user-attachments/assets/d9c97f71-b2dd-4a0b-ab1d-b9e36a9b5e23)*
+![data](玉树樱_1.jpg)
 
 
 The raw battle between **Logic Delay** and **Net Delay**. When operating in the `gt_txusrclk2` domain at 322MHz, the propagation delay across the silicon is your biggest enemy.
@@ -31,8 +31,7 @@ The raw battle between **Logic Delay** and **Net Delay**. When operating in the 
 * **Logic**: If you let the GUI decide your Placement, your Net Delay will spike, and your 31.5ns target will be shattered by routing congestion.
 
 ### Stage 2: Floorplanning & Initial Timing Closure
-
-* ![Weixin Image_20260318204058_5_26](https://github.com/user-attachments/assets/914102f8-78b1-4161-87de-6fe76e48c760)*
+![Data_Path_Logic](tamakisakura2_.jpg)
 
 Initial logic mapping and physical isolation. 
 * **Timing Met**: **WNS (Worst Negative Slack)** secured at **0.708 ns**. **WHS (Worst Hold Slack)** tightly locked at **0.024 ns**.
@@ -40,9 +39,9 @@ Initial logic mapping and physical isolation.
 
 ### Stage 3: Full Pipeline Squeeze @ 322MHz
 
-*![Weixin Image_20260318204100_6_26](https://github.com/user-attachments/assets/22b17bb2-21c9-4b91-9fdb-dabb24aca638)*
+![Timing_Summary](莓氷えな_3.jpg)
 
-*![Weixin Image_20260318204101_7_26](https://github.com/user-attachments/assets/52906542-3e55-47e9-aceb-8c766849af79)*
+![Clock_Tree](Itigoriena_4.png)
 
 As the parsing logic scales, the timing window shrinks to its absolute physical limit.
 * **Timing Met**: **WNS** squeezed to **0.472 ns**, **WHS** at **0.030 ns**. 
@@ -58,7 +57,7 @@ As the parsing logic scales, the timing window shrinks to its absolute physical 
 
 #### I. Latency Validation: Waveform Snapshot
 We are running `GTH Raw Mode` on the Ultrascale+ architecture, stripping away all non-essential protocol overhead (e.g., standard 802.3 buffers, PCS alignment primitives) for direct hardware parallel data access. 
-<img width="1105" height="754" alt="Snipaste_2026-03-28_01-31-59" src="https://github.com/user-attachments/assets/bec0526e-c7d4-4c81-9426-657ddc7cd315" />
+![Physical_Mapping](ena4x2_.png)
 
 
 
@@ -66,9 +65,9 @@ We are running `GTH Raw Mode` on the Ultrascale+ architecture, stripping away al
 
 #### II. Implementation Details: Synthesis Schematic
 This isn't generic RTL synthesis; this is **direct physical mapping**. We are manually configuring registers (`mock_gth_data_reg`) and logic gates to absolutely minimize interconnect routing delay at the silicon level.
-<img width="1039" height="694" alt="Snipaste_2026-03-28_01-32-47" src="https://github.com/user-attachments/assets/93f19018-b87c-4863-b8d9-126920ec3e24" />
+![Manual_Routing](朽木冬子_5.png)
 
-<img width="947" height="733" alt="Snipaste_2026-03-28_01-32-55" src="https://github.com/user-attachments/assets/d99bd1ff-3d88-4709-976e-d0e2044cfc39" />
+![Output_Waveform](tkyou_6.png)
 
 
 * **Clock Tree:** `IBUFDS_GTE4` -> `BUFG_GT_SYNC`. Direct-driven reference clock path ensuring zero-latency clock enables across the 16nm die matrix.
@@ -84,7 +83,7 @@ As the parsing logic scales, the timing window shrinks to its absolute physical 
 
 > **Proprietary Disclaimer:** > **Do not ask for the XDC constraint scripts.** The exact `set_property LOC/BEL` coordinate mappings and Phase Interpolator calibration values are proprietary and isolated. What you see here is the physical result; the manual routing logic behind it remains classified.
 ### Stage NEW: VU9P Matrix Scaling & SLR Isolation
-<img width="1098" height="663" alt="Snipaste_2026-03-31_17-51-22" src="https://github.com/user-attachments/assets/a81dbae1-569f-4ed4-b6bd-79310b9fde7d" />
+!fanout](shio_7.png)
 
 Scaling the core engine to the **Virtex UltraScale+ VU9P** architecture. In this 16nm multi-die matrix, the physical dimension of the silicon becomes the primary latency bottleneck.
 
@@ -94,7 +93,7 @@ Scaling the core engine to the **Virtex UltraScale+ VU9P** architecture. In this
 
 ### Stage 2: High-Fanout Congestion Management & Routing Matrix Pressure
 
-<img width="1113" height="671" alt="Snipaste_2026-03-31_17-51-06" src="https://github.com/user-attachments/assets/303069d1-602b-4293-a970-e33be2921f5e" />
+!rooting](utou_8.png)
 
 
 As the **OMD-C** parsing tree expands, **High Fanout** nodes (Fanout > 12) begin to strain the **Routing Matrix**. On a high-density device like the **VU9P**, even moderate fanout forces the router to bridge multiple **CLEM** tiles, leading to unpredictable timing skew.
@@ -105,7 +104,7 @@ As the **OMD-C** parsing tree expands, **High Fanout** nodes (Fanout > 12) begin
     * We prohibit the EDA tool from "lazy-routing" critical enable signals across the die. Instead, we force physical replicas of the **FF** to reside immediately adjacent to their target **LUT** clusters using `(* MAX_FANOUT = 12 *)` attributes.
 * **Strategic Buffer**: Maintaining a **2.011 ns** slack is not just for timing closure; it is a critical buffer for the upcoming **Order Book** parallel search logic. In the **VU9P** environment, **Fanout** is not a mere routing statistic—it is a direct threat to the **Zero Jitter** mandate.
   ### Stage 2: High-Fanout Congestion Management & Routing Matrix Pressure
-<img width="807" height="499" alt="Snipaste_2026-03-31_21-50-32" src="https://github.com/user-attachments/assets/a5823876-3494-406c-a991-62202b333b4e" />
+![hold](yuki_9.png)
 
 
 
