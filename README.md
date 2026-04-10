@@ -141,6 +141,10 @@ This period of extreme **Physical Layer** squeezing has allowed me to truly achi
 
 <img width="2057" height="996" alt="image" src="https://github.com/user-attachments/assets/13a22890-0a25-494c-ae6e-c1f6e36d687a" />
 
+New Simulation
+<img width="1102" height="544" alt="Snipaste_2026-04-11_02-34-34" src="https://github.com/user-attachments/assets/4b26d169-1d64-4091-823c-cb75858f31ca" />
+
+
 
 
 
